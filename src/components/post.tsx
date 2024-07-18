@@ -1,4 +1,4 @@
-import { Dot, MessageSquare, Share } from "lucide-react"
+import { Bookmark, Dot, MessageSquare, Share, UserPlus } from "lucide-react"
 import Link from "next/link"
 import UpvoteBtn from "./upvotebtn"
 import PostTime from "./posttime"
@@ -10,7 +10,7 @@ type Props = {
     title: string,
     description: string,
     imageSrc: string | null
-    id: string
+    id: number
     date: Date
     votes: number
     voteData: any
@@ -29,7 +29,9 @@ export const Post = ({userId,
     
     return (
         
-            <div className=" border-b w-full bg-gray-900 p-3 hover:bg-slate-700 space-y-2 mt-2">
+        <div className=" flex border-b w-full my-1  bg-gray-900 hover:bg-slate-700 py-2">
+            <UpvoteBtn voteData={voteData} userId={userId} id={id}/>
+            <div className="w-full px-1 h-full">
                 <div className="flex justify-between">
                     <div className="flex space-x-1">
                         <img className="rounded-full w-5 h-5" src={userprofile} alt="" />
@@ -58,21 +60,22 @@ export const Post = ({userId,
                         </div>
                     </div>
                 </Link>
-                <div className="flex space-x-2 items-center mt-2 ">
-                    <UpvoteBtn voteData={voteData} userId={userId} id={id}/>
-                    <Link href={`/${id}`} className="flex space-x-1 bg-slate-900 p-2 rounded-2xl">
-                        <MessageSquare/>
-                        <span>
-                            Comments
-                        </span>
-                    </Link>
-                    <button className="flex space-x-1 bg-slate-900 p-2 rounded-2xl">
-                        <Share/>
-                        <span>
-                            Share
-                        </span>
-                    </button>
-                </div>
+
             </div>
+            <div className="flex space-y-1 mx-2 h-full flex-col items-center ">
+                <button className="flex space-x-1 bg-slate-900 p-2 rounded-2xl">
+                    <UserPlus/>
+                </button>
+                <Link href={`/${id}`} className="flex space-x-1 bg-slate-900 p-2 rounded-2xl">
+                    <MessageSquare/>
+                </Link>
+                <button className="flex space-x-1 bg-slate-900 p-2 rounded-2xl">
+                    <Share/>
+                </button>
+                <button className="flex space-x-1 bg-slate-900 p-2 rounded-2xl">
+                    <Bookmark/>
+                </button>
+            </div>
+        </div>
     )
 }

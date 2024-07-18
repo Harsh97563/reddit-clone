@@ -13,7 +13,7 @@ const dashboardLayout = async({children}: {children: React.ReactNode}) => {
         <div>
             <NavBar session= {session}/>
             <SideBar/>
-            <div className="h-full max-w-[1056px] mx-auto mt-16 p-2">
+            <div className="h-full max-w-[1240px] mx-auto mt-16 p-2">
                 {children}
             </div>
         </div>

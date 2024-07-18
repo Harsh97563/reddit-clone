@@ -33,13 +33,12 @@ export default function Home() {
     rootMargin: "600px",
   });
   
-  const {data, error, fetchNextPage, isFetching, isLoading, hasNextPage} = useInfiniteQuery({
+  const {data, fetchNextPage, isFetching, isLoading, hasNextPage} = useInfiniteQuery({
     queryKey: ['posts'],
     queryFn: fetchPosts,
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => lastPage?.nextPage ?? undefined
   })
-  console.log(data);
   
   useEffect(() => {
     if(inView && hasNextPage){

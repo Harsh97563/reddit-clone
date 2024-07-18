@@ -1,31 +1,34 @@
 'use client'
 import axios from "axios"
-import { ArrowBigDown, ArrowBigUp } from "lucide-react"
+import { ArrowBigDown, ArrowBigUp, ArrowUp, ChevronUp } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
 import { Slide, toast } from "react-toastify"
 
+interface VoteData {
+    type: "UPVOTE" | "DOWNVOTE",
+    userId: number
+}
 
 export default function UpvoteBtn({voteData, userId, id}:any){
     const Session = useSession()
     const [isIncreased, setIsIncreased] = useState(false)
-    const [isDecreased, setIsDecreased] = useState(false)
     const [votes, setVotes] = useState(0)
+    // @ts-ignore
     const activeUserId = Session.data?.user?.id
     useEffect(() => {
-        voteData.map((data) => {
+        voteData.map((data: VoteData) => {
             
             if(data.userId == activeUserId){
                 if(data.type == 'UPVOTE') setIsIncreased(true)
-                else setIsDecreased(true)    
+                else setIsIncreased(false)    
             }
         })
-        const Upvotes = voteData.filter((data) => data.type === 'UPVOTE')
-        const Downvotes = voteData.filter((data) => data.type === 'DOWNVOTE')
-        setVotes(Upvotes.length - Downvotes.length)
+        const Upvotes = voteData.filter((data: VoteData) => data.type === 'UPVOTE')
+        setVotes(Upvotes.length)
     }, [])
     
-    async function Upvote(increase: boolean) {
+    async function Upvote() {
         if(!Session.data){
             toast("You are not logged In." ,{
                 position: "bottom-right",
@@ -37,52 +40,39 @@ export default function UpvoteBtn({voteData, userId, id}:any){
             })
             return
         }
-        if(increase){
-            if(isIncreased){
-                return
-            }
-            setIsIncreased(true)
-            setIsDecreased(false)
-            setVotes((prev) => prev + 1)
+        if(isIncreased){
+            setIsIncreased(false)
+            setVotes((prev) => prev - 1)
             await axios.put('http://localhost:3000/api/post', {
                 userId,
-                postId: Number(id),
-                type: 'UPVOTE'
+                postId: id,
+                type: 'DOWNVOTE'
             })
-
             return
         }
-        if(isDecreased){
-            return
-        }
-        setIsDecreased(true)
-        setIsIncreased(false)
-        setVotes((prev) => prev - 1)
+        setIsIncreased(true)
+        setVotes((prev) => prev + 1)
         await axios.put('http://localhost:3000/api/post', {
             userId,
-            postId: id,
-            type: 'DOWNVOTE'
+            postId: Number(id),
+            type: 'UPVOTE'
         })
-        return
 
     }
+
     return (
-        <a onClick={(e) => e.preventDefault()}>
-            <div className={`flex space-x-1 ${isIncreased || isDecreased ? "border border-orange-700": ""} bg-slate-900 p-2 rounded-2xl`}
-            >
-                <button onClick={(e)=> {
-                    Upvote(true)   
+        <div className={`flex items-center flex-col`}
+        >
+            <div className={`flex flex-col transition-all duration-500 items-center relative ${isIncreased ? "-top-3": "top-[50%]"}`}>
+                <button 
+                onClick={(e)=> {
+                    Upvote()   
                 }
                 }>
-                    <ArrowBigUp fill={isIncreased ? "red":"transparent"} />
+                    <ChevronUp size={42} />
                 </button>
                 <span>{votes}</span>
-                <button onClick={(e)=> {
-                    Upvote(false)
-                }}>
-                    <ArrowBigDown fill={isDecreased ? "red":"transparent"}/>
-                </button>
             </div>
-        </a>
+        </div>
     )
 }
